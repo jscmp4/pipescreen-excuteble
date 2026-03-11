@@ -1,14 +1,15 @@
 # Pipescreen
 
-Local screenpipe setup and interactive launcher. Part of a larger project to build a personal life timeline that captures both on-screen and off-screen activities.
+A one-click launcher for [screenpipe](https://github.com/screenpipe/screenpipe). Double-click to start recording your screen and audio locally.
 
-## What is this?
-
-[Screenpipe](https://github.com/screenpipe/screenpipe) records your screen and audio locally, extracts text via OCR, transcribes speech, and provides a REST API to search through everything. This repo contains scripts to install, configure, and run screenpipe with an interactive menu.
+**This is not screenpipe itself.** This repo just wraps screenpipe with an interactive menu so you can install, configure, and run it without touching the terminal. All the actual recording, OCR, and transcription is done by [screenpipe](https://github.com/screenpipe/screenpipe).
 
 ## Quick start (Windows)
 
-Double-click `pipescreen.bat`. You'll see:
+1. Double-click `pipescreen.bat`
+2. Press `6` to install screenpipe (first time only)
+3. Press `5` to pick a data folder (recommended: put it on a non-C: drive)
+4. Press `1` to start recording
 
 ```
   ========================================
@@ -27,15 +28,7 @@ Double-click `pipescreen.bat`. You'll see:
   [q] Quit
 ```
 
-First time? Press `6` to install, then `5` to pick a data folder (so your C: drive doesn't fill up), then `1` to start.
-
-### Quick start mode
-
-```
-pipescreen.bat --quick
-```
-
-Skips the menu and starts recording immediately. Good for startup scripts.
+For auto-start (e.g. startup script): `pipescreen.bat --quick`
 
 ## macOS / Linux
 
@@ -44,49 +37,43 @@ chmod +x pipescreen.sh
 ./pipescreen.sh
 ```
 
-> **Note:** macOS/Linux support is provided via `pipescreen.sh` but has not been tested yet. Screenpipe itself supports macOS and Linux.
+> macOS/Linux support via `pipescreen.sh` is untested. Screenpipe itself supports macOS and Linux.
 
-## Files
+## What's in this repo
 
-| File | Platform | Purpose |
-|------|----------|---------|
-| `pipescreen.bat` | Windows | Interactive launcher (double-click to use) |
+| File | Platform | What it does |
+|------|----------|-------------- |
+| `pipescreen.bat` | Windows | Interactive launcher (double-click) |
 | `pipescreen.sh` | macOS/Linux | Interactive launcher |
-| `setup-screenpipe.ps1` | Windows | Auto-install screenpipe (PowerShell) |
-| `build-screenpipe-source.ps1` | Windows | Build screenpipe from source |
+| `setup-screenpipe.ps1` | Windows | Auto-install helper (PowerShell) |
+| `build-screenpipe-source.ps1` | Windows | Build from source (optional) |
+
+## What's NOT in this repo
+
+- Screenpipe itself -- see [screenpipe/screenpipe](https://github.com/screenpipe/screenpipe)
+- Screenpipe docs -- see [docs.screenpi.pe](https://docs.screenpi.pe)
+- Your recorded data -- stored locally in the data folder you pick
 
 ## Configuration
 
-Settings are saved to `~/.pipescreen.conf.bat` (Windows) or `~/.pipescreen.conf` (macOS/Linux) and persist across restarts.
+Settings are saved to `~/.pipescreen.conf.bat` (Windows) or `~/.pipescreen.conf` (macOS/Linux) and persist across restarts:
 
-- **Data directory** - where screenshots, audio, and the database are stored (default: `~/.screenpipe`)
+- **Data directory** - where screenshots, audio, and the SQLite database go (default: `~/.screenpipe`)
 - **Port** - API port (default: 3030)
 
-## Screenpipe API
+## Screenpipe API (quick reference)
 
-Once recording, the API is available at `http://localhost:3030`:
+Once recording, screenpipe's API runs at `http://localhost:3030`. Full docs: [docs.screenpi.pe](https://docs.screenpi.pe)
 
 | Endpoint | Description |
 |----------|-------------|
 | `GET /health` | System status |
 | `GET /search?q=keyword&limit=10` | Search screen/audio history |
-| `GET /search?content_type=ocr` | Search screen text only |
-| `GET /search?content_type=audio` | Search audio transcriptions only |
-| `GET /search?app_name=Chrome&start_time=...&end_time=...` | Filter by app and time range |
-| `GET /frames/{id}` | Get a captured frame |
+| `GET /search?content_type=ocr` | Screen text only |
+| `GET /search?content_type=audio` | Audio transcriptions only |
+| `GET /search?app_name=Chrome&start_time=...&end_time=...` | Filter by app and time |
+| `GET /frames/{id}` | Get a captured screenshot |
 | `POST /raw_sql` | Direct SQLite queries |
-
-## Data storage
-
-All data is stored locally in the configured data directory:
-
-```
-<data-dir>/
-  db.sqlite          # Main database (OCR text, transcriptions, metadata)
-  data/
-    2026-03-10/       # Screenshots (JPEG) organized by date
-    *.mp4             # Audio recordings
-```
 
 ## License
 
